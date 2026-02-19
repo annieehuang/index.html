@@ -1055,6 +1055,100 @@
 
   .notes-wrap { margin-bottom: 1.3rem; }
 
+  /* day preview list */
+  .day-preview {
+    display: none;
+    width: 100%;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    animation: fadeUp 0.2s ease;
+  }
+  .day-preview.visible { display: block; }
+  .day-preview-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.55rem;
+  }
+  .day-preview-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+  }
+  .day-preview-item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.38rem 0.7rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  .day-preview-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+    width: 1rem;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .day-preview-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    flex: 1;
+  }
+  .day-preview-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .day-preview-cat {
+    width: 6px; height: 6px;
+    border-radius: 100px;
+    flex-shrink: 0;
+  }
+  .day-preview-cat.strength    { background: var(--strength); }
+  .day-preview-cat.hypertrophy { background: var(--hyper); }
+  .day-preview-cat.energy      { background: var(--energy); }
+
+  /* whats next block */
+  .whats-next {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .whats-next-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .whats-next-name {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--dim);
+    flex: 1;
+  }
+  .whats-next-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
   .status-block {
     border-radius: 3px;
     padding: 1.1rem 1rem;
@@ -1310,6 +1404,11 @@
       </button>
     </div>
 
+    <div class="day-preview" id="dayPreview">
+      <div class="day-preview-label">exercises</div>
+      <div class="day-preview-list" id="dayPreviewList"></div>
+    </div>
+
     <button class="btn-abs" onclick="openAbsWorkout()">+ just abs</button>
 
     <div class="form-stack">
@@ -1546,7 +1645,25 @@ function selectDay(d) {
   state.day = d;
   document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
   document.getElementById('dayBtn-' + d).classList.add('selected');
+  renderDayPreview(d);
   checkStart();
+}
+
+function renderDayPreview(d) {
+  const exercises = PROGRAMS[d].exercises;
+  const listEl    = document.getElementById('dayPreviewList');
+  const wrapEl    = document.getElementById('dayPreview');
+  if (!listEl || !wrapEl) return;
+
+  listEl.innerHTML = exercises.map((ex, i) => `
+    <div class="day-preview-item">
+      <span class="day-preview-num">${i + 1}</span>
+      <span class="day-preview-cat ${ex.category}"></span>
+      <span class="day-preview-name">${ex.name}</span>
+      <span class="day-preview-meta">${ex.sets}×${ex.repsLabel}</span>
+    </div>`).join('');
+
+  wrapEl.classList.add('visible');
 }
 
 document.getElementById('workoutDate').valueAsDate = new Date();
@@ -1871,10 +1988,17 @@ function renderExercise() {
           onchange="updateNote(this.value)">${res.note}</textarea>
       </div>
 
+      ${!isLast ? `
+      <div class="whats-next">
+        <span class="whats-next-lbl">next</span>
+        <span class="whats-next-name">${state.exercises[idx+1].name}</span>
+        <span class="whats-next-meta">${state.exercises[idx+1].sets}×${state.exercises[idx+1].repsLabel}</span>
+      </div>` : ''}
+
       <div class="nav-row">
         ${idx > 0 ? `<button class="btn-prev" onclick="prevExercise()">← back</button>` : ''}
         <button class="btn-next ${isLast ? 'finish' : ''}" onclick="nextExercise()">
-          ${isLast ? 'finish workout' : `next: ${state.exercises[idx+1].name.toLowerCase()} →`}
+          ${isLast ? 'finish workout' : 'next exercise →'}
         </button>
       </div>
     </div>`;
@@ -2017,6 +2141,7 @@ function doGoHome() {
   document.getElementById('workoutDate').valueAsDate = new Date();
   document.getElementById('sessionNotes').value = '';
   document.getElementById('startBtn').disabled = true;
+  const dp = document.getElementById('dayPreview'); if (dp) dp.classList.remove('visible');
   renderHistory();
   showScreen('home');
 }
@@ -2161,6 +2286,7 @@ function goHome() {
   document.getElementById('workoutDate').valueAsDate = new Date();
   document.getElementById('sessionNotes').value = '';
   document.getElementById('startBtn').disabled = true;
+  const dp = document.getElementById('dayPreview'); if (dp) dp.classList.remove('visible');
   renderHistory();
   showScreen('home');
 }
