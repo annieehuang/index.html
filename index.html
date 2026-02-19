@@ -544,12 +544,11 @@
   .sets-stack { display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.3rem; }
   .set-row {
     display: grid;
-    grid-template-columns: 1.5rem 1fr 1fr 2rem;
+    grid-template-columns: 1.5rem 1fr 1fr;
     gap: 0.45rem;
     align-items: center;
     transition: opacity 0.2s;
   }
-  .set-row.completed { opacity: 0.4; }
   .set-n {
     font-family: 'DM Mono', monospace;
     font-size: 0.6rem;
@@ -564,18 +563,6 @@
     height: 2.1rem;
   }
   .set-row input::placeholder { color: var(--border); }
-  .check-btn {
-    width: 2rem; height: 2.1rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    color: var(--muted);
-    font-size: 0.8rem;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s; flex-shrink: 0;
-  }
-  .check-btn.done { background: rgba(200,169,122,0.1); border-color: var(--accent); color: var(--accent); }
 
   .notes-wrap { margin-bottom: 1.3rem; }
 
@@ -1011,7 +998,7 @@ function startWorkout() {
   state.currentEx = 0;
   state.results = state.exercises.map(ex => ({
     status: 'pending',
-    sets: Array.from({length: ex.sets}, () => ({weight: ex.defaultWeight || '', reps: '', done: false})),
+    sets: Array.from({length: ex.sets}, () => ({weight: ex.defaultWeight || '', reps: ''})),
     note: ''
   }));
   showScreen('workout');
@@ -1033,7 +1020,7 @@ function renderHistory() {
     const actualIdx = workoutHistory.length - 1 - idx;
     const d = new Date(w.date + 'T12:00:00');
     const dateStr = d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
-    const totalSets = w.results.reduce((acc, r) => acc + r.sets.filter(s => s.weight || s.reps || s.done).length, 0);
+    const totalSets = w.results.reduce((acc, r) => acc + r.sets.filter(s => s.weight || s.reps).length, 0);
     const skipped   = w.results.filter(r => r.status === 'skipped').length;
     const busy      = w.results.filter(r => r.status === 'busy').length;
 
@@ -1134,13 +1121,12 @@ function renderExercise() {
       </div>
       <div class="sets-stack" id="setsGrid">
         ${res.sets.map((s, i) => `
-          <div class="set-row ${s.done ? 'completed' : ''}" id="setRow${i}">
+          <div class="set-row" id="setRow${i}">
             <span class="set-n">${i+1}</span>
             <input type="text" inputmode="decimal" placeholder="${ph}" value="${s.weight}"
               id="setW${i}" onchange="updateSet(${i},'weight',this.value)">
             <input type="text" inputmode="numeric" placeholder="reps" value="${s.reps}"
               id="setR${i}" onchange="updateSet(${i},'reps',this.value)">
-            <button class="check-btn ${s.done ? 'done' : ''}" onclick="toggleSetDone(${i})">${s.done ? '✓' : '·'}</button>
           </div>`).join('')}
       </div>`;
   }
@@ -1214,16 +1200,12 @@ function applyToAll() {
   res.sets.forEach((s, i) => {
     s.weight = w;
     s.reps   = r;
-    s.done   = true;
     // update DOM
     const wEl = document.getElementById('setW' + i);
     const rEl = document.getElementById('setR' + i);
-    const checkEl = document.getElementById('setRow' + i)?.querySelector('.check-btn');
     const rowEl   = document.getElementById('setRow' + i);
     if (wEl) wEl.value = w;
     if (rEl) rEl.value = r;
-    if (checkEl) { checkEl.textContent = '✓'; checkEl.classList.add('done'); }
-    if (rowEl)   rowEl.classList.add('completed');
   });
 
   if (res.status === 'pending') res.status = 'done';
@@ -1232,16 +1214,6 @@ function applyToAll() {
 function updateSet(i, field, val) {
   state.results[state.currentEx].sets[i][field] = val;
   if (state.results[state.currentEx].status === 'pending') state.results[state.currentEx].status = 'done';
-}
-
-function toggleSetDone(i) {
-  const s = state.results[state.currentEx].sets[i];
-  s.done = !s.done;
-  if (state.results[state.currentEx].status === 'pending' && s.done) state.results[state.currentEx].status = 'done';
-  const btn = document.getElementById('setRow'+i)?.querySelector('.check-btn');
-  const row = document.getElementById('setRow'+i);
-  if (btn) { btn.textContent = s.done ? '✓' : '·'; btn.classList.toggle('done', s.done); }
-  if (row) row.classList.toggle('completed', s.done);
 }
 
 function updateNote(v)   { state.results[state.currentEx].note = v; }
@@ -1382,7 +1354,7 @@ function showSummary() {
     exercises: state.exercises.map(e => ({ name: e.name, weightUnit: e.weightUnit })),
     results: state.results.map(r => ({
       status: r.status,
-      sets: r.sets.map(s => ({ weight: s.weight, reps: s.reps, done: s.done })),
+      sets: r.sets.map(s => ({ weight: s.weight, reps: s.reps })),
       note: r.note
     }))
   };
@@ -1405,7 +1377,7 @@ function showSummary() {
     const ex = state.exercises[i];
     if (res.status === 'skipped') skipped++;
     else if (res.status === 'busy') busy++;
-    totalSets += res.sets.filter(s => s.done || s.weight || s.reps).length;
+    totalSets += res.sets.filter(s => s.weight || s.reps).length;
 
     let detail = '';
     if (res.status === 'skipped') detail = `<div class="sum-status skipped">— skipped</div>`;
