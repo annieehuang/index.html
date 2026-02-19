@@ -122,7 +122,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 0.55rem;
     width: 100%;
-    margin-bottom: 2rem;
+    margin-bottom: 0.55rem;
   }
 
   .day-btn {
@@ -466,6 +466,342 @@
     color: var(--strength);
     margin-bottom: 0.6rem;
   }
+
+  /* rest timer */
+  .rest-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .rest-block.running {
+    border-color: var(--accent);
+    background: rgba(200,169,122,0.05);
+  }
+  .btn-start-rest {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    padding: 0.45rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-start-rest:hover { border-color: var(--accent); color: var(--accent); }
+  .rest-timer-display {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+  }
+  .rest-timer-display.visible { display: flex; }
+  .rest-countdown {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+    min-width: 3.2rem;
+  }
+  .rest-countdown.done { color: var(--strength); }
+  .rest-mini-btns {
+    display: flex;
+    gap: 0.35rem;
+    flex-shrink: 0;
+  }
+  .btn-rest-mini {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    padding: 0.28rem 0.5rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-rest-mini:hover { border-color: var(--accent); color: var(--accent); }
+  .rest-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex: 1;
+  }
+
+  /* ── Abs Button ── */
+  .btn-abs {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--muted);
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+    margin-top: 0.55rem;
+    margin-bottom: 2rem;
+  }
+  .btn-abs:hover { border-color: var(--dim); color: var(--text); }
+
+  /* ── Abs Screen ── */
+  #absWorkout {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .abs-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(28,26,23,0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.7rem 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .abs-header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--accent);
+  }
+  .btn-abs-exit {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--border);
+    transition: color 0.2s;
+  }
+  .btn-abs-exit:hover { color: var(--text); }
+
+  .abs-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1.5rem 3rem;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* big timer ring */
+  .abs-timer-ring {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 2rem;
+  }
+  .abs-timer-ring svg {
+    transform: rotate(-90deg);
+  }
+  .abs-ring-bg { fill: none; stroke: var(--border); stroke-width: 4; }
+  .abs-ring-fill {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.9s linear;
+  }
+  .abs-ring-fill.break-mode { stroke: var(--hyper); }
+  .abs-timer-ring { cursor: pointer; }
+  .abs-paused-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--warn);
+    margin-top: 0.15rem;
+  }
+  .abs-timer-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .abs-timer-seconds {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.2rem;
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1;
+  }
+  .abs-timer-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  /* current exercise display */
+  .abs-current-ex {
+    text-align: center;
+    margin-bottom: 2rem;
+    min-height: 4rem;
+  }
+  .abs-current-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+  }
+  .abs-current-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .abs-current-note {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  /* exercise list */
+  .abs-ex-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 2rem;
+  }
+  .abs-ex-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+    opacity: 0.4;
+  }
+  .abs-ex-item.done-ex {
+    opacity: 0.25;
+  }
+  .abs-ex-item.active-ex {
+    opacity: 1;
+    border-color: var(--accent);
+    background: rgba(200,169,122,0.06);
+  }
+  .abs-ex-item.upcoming-ex {
+    opacity: 0.55;
+  }
+  .abs-ex-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    width: 1.2rem;
+    flex-shrink: 0;
+    text-align: center;
+  }
+  .abs-ex-item.active-ex .abs-ex-num { color: var(--accent); }
+  .abs-ex-item-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    flex: 1;
+  }
+  .abs-ex-item-dur {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .abs-ex-check {
+    font-size: 0.7rem;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* start / done state */
+  .abs-start-area {
+    text-align: center;
+  }
+  .btn-abs-start {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 3px;
+    padding: 0.95rem 3rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 0.75rem;
+  }
+  .btn-abs-start:hover { background: #d4b888; }
+
+  .abs-done-screen {
+    display: none;
+    text-align: center;
+    padding-top: 1rem;
+  }
+  .abs-done-screen.visible { display: block; }
+  .abs-done-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 8vw, 3.2rem);
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .abs-done-sub {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .btn-abs-again {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--muted);
+    padding: 0.75rem 2rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-abs-again:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ══ WORKOUT ══ */
   #workout { background: var(--bg); }
@@ -973,6 +1309,8 @@
         <span class="day-sub">Hex Squat<br>RDLs</span>
       </button>
     </div>
+
+    <button class="btn-abs" onclick="openAbsWorkout()">+ just abs</button>
 
     <div class="form-stack">
       <div>
@@ -1515,6 +1853,18 @@ function renderExercise() {
 
       <div class="rule"></div>
 
+      <div class="rest-block" id="restBlock">
+        <button class="btn-start-rest" id="restStartBtn" onclick="startRest()">start rest</button>
+        <div class="rest-timer-display" id="restDisplay">
+          <div class="rest-countdown" id="restCountdown">2:00</div>
+          <span class="rest-lbl" id="restStatusLbl">resting…</span>
+          <div class="rest-mini-btns">
+            <button class="btn-rest-mini" onclick="addRestTime(30)">+30s</button>
+            <button class="btn-rest-mini" onclick="stopRest()">done</button>
+          </div>
+        </div>
+      </div>
+
       <div class="notes-wrap">
         <span class="lbl">notes</span>
         <textarea placeholder="weight used, how it felt, form cues…"
@@ -1568,6 +1918,7 @@ function markStatus(s)   { state.results[state.currentEx].status = s; renderExer
 function undoStatus()    { state.results[state.currentEx].status = 'pending'; renderExercise(); }
 
 function nextExercise() {
+  stopRest();
   hideConfirm('confirmHomeBar'); hideConfirm('confirmFinishBar');
   if (state.results[state.currentEx].status === 'pending') state.results[state.currentEx].status = 'done';
   if (state.currentEx === state.exercises.length - 1) { showSummary(); }
@@ -1575,6 +1926,7 @@ function nextExercise() {
 }
 
 function prevExercise() {
+  stopRest();
   hideConfirm('confirmHomeBar'); hideConfirm('confirmFinishBar');
   if (state.currentEx > 0) {
     state.currentEx--;
@@ -1591,6 +1943,67 @@ function showConfirm(id) {
 }
 function hideConfirm(id) {
   document.getElementById(id).classList.remove('visible');
+}
+
+// ══════════════ REST TIMER ══════════════
+let restSeconds = 0;
+let restInterval = null;
+
+function startRest() {
+  stopRest(); // clear any previous
+  restSeconds = 120; // default 2 min
+  const block   = document.getElementById('restBlock');
+  const startBtn = document.getElementById('restStartBtn');
+  const display  = document.getElementById('restDisplay');
+  const lbl      = document.getElementById('restStatusLbl');
+  if (!block) return;
+  block.classList.add('running');
+  startBtn.style.display = 'none';
+  display.classList.add('visible');
+  lbl.textContent = 'resting…';
+  updateRestDisplay();
+  restInterval = setInterval(() => {
+    restSeconds--;
+    if (restSeconds <= 0) {
+      restSeconds = 0;
+      updateRestDisplay();
+      clearInterval(restInterval);
+      restInterval = null;
+      const cd = document.getElementById('restCountdown');
+      const l  = document.getElementById('restStatusLbl');
+      if (cd) cd.classList.add('done');
+      if (l)  l.textContent = 'done!';
+    } else {
+      updateRestDisplay();
+    }
+  }, 1000);
+}
+
+function stopRest() {
+  if (restInterval) { clearInterval(restInterval); restInterval = null; }
+  const block    = document.getElementById('restBlock');
+  const startBtn = document.getElementById('restStartBtn');
+  const display  = document.getElementById('restDisplay');
+  const cd       = document.getElementById('restCountdown');
+  if (!block) return;
+  block.classList.remove('running');
+  if (startBtn) startBtn.style.display = '';
+  if (display)  display.classList.remove('visible');
+  if (cd)       { cd.classList.remove('done'); cd.textContent = '2:00'; }
+  restSeconds = 0;
+}
+
+function updateRestDisplay() {
+  const el = document.getElementById('restCountdown');
+  if (!el) return;
+  const m = Math.floor(restSeconds / 60);
+  const s = restSeconds % 60;
+  el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function addRestTime(secs) {
+  restSeconds += secs;
+  updateRestDisplay();
 }
 
 function confirmEnd() { showConfirm('confirmFinishBar'); }
@@ -1752,6 +2165,210 @@ function goHome() {
   showScreen('home');
 }
 
+// ══════════════ ABS WORKOUT ══════════════
+const ABS_EXERCISES = [
+  { name: 'Basic Crunches',    duration: 60, note: '' },
+  { name: 'Bicycle Kicks',     duration: 60, note: '' },
+  { name: 'Jack Knives',       duration: 60, note: '15 per side' },
+  { name: 'Russian Twists',    duration: 60, note: 'feet slightly elevated' },
+  { name: 'Toe Taps',          duration: 60, note: '' },
+  { name: 'Bicycle Crunches',  duration: 60, note: '20 per side' },
+  { name: 'Scissor Kicks',     duration: 60, note: '' },
+  { name: 'Reverse Crunches',  duration: 60, note: '' },
+  { name: 'Butterfly Kicks',   duration: 60, note: '' },
+];
+const ABS_BREAK = 10;
+const CIRCUMFERENCE = 2 * Math.PI * 82; // ~515
+
+let absState = {
+  running: false,
+  currentIdx: 0,   // index into ABS_EXERCISES
+  isBreak: false,
+  secondsLeft: 0,
+  interval: null,
+  totalDuration: 0,
+};
+
+function openAbsWorkout() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('absWorkout').style.display = 'flex';
+  document.getElementById('absWorkout').style.flexDirection = 'column';
+  resetAbsWorkout();
+  window.scrollTo(0, 0);
+}
+
+function closeAbsWorkout() {
+  stopAbsTimer();
+  document.getElementById('absWorkout').style.display = 'none';
+  document.getElementById('home').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function resetAbsWorkout() {
+  stopAbsTimer();
+  absState.currentIdx = 0;
+  absState.isBreak    = false;
+  absState.running    = false;
+
+  document.getElementById('absStartArea').style.display = 'block';
+  document.getElementById('absDoneScreen').classList.remove('visible');
+
+  setAbsTimerDisplay(ABS_EXERCISES[0].duration, false);
+  document.getElementById('absCurrentName').textContent = ABS_EXERCISES[0].name;
+  document.getElementById('absCurrentNote').textContent = ABS_EXERCISES[0].note;
+  document.getElementById('absTimerLabel').textContent  = 'ready';
+  const pl = document.getElementById('absPausedLabel'); if (pl) pl.style.display = 'none';
+  document.querySelector('.abs-current-tag').textContent = 'first up';
+
+  const ring = document.getElementById('absRingFill');
+  ring.style.strokeDashoffset = '0';
+  ring.classList.remove('break-mode');
+
+  renderAbsExList(-1);
+}
+
+function renderAbsExList(activeIdx) {
+  const el = document.getElementById('absExList');
+  el.innerHTML = ABS_EXERCISES.map((ex, i) => {
+    let cls = 'abs-ex-item';
+    let checkHTML = '';
+    if (i < activeIdx)       { cls += ' done-ex'; checkHTML = '<span class="abs-ex-check">✓</span>'; }
+    else if (i === activeIdx) { cls += ' active-ex'; }
+    else                      { cls += ' upcoming-ex'; }
+    return `<div class="${cls}">
+      <span class="abs-ex-num">${i+1}</span>
+      <span class="abs-ex-item-name">${ex.name}${ex.note ? ` <span style="font-style:italic;font-size:0.8rem;color:var(--muted)">· ${ex.note}</span>` : ''}</span>
+      <span class="abs-ex-item-dur">1:00</span>
+      ${checkHTML}
+    </div>`;
+  }).join('');
+}
+
+function startAbsTimer() {
+  document.getElementById('absStartArea').style.display = 'none';
+  absState.running    = true;
+  absState.currentIdx = 0;
+  absState.isBreak    = false;
+  beginAbsPhase();
+}
+
+function beginAbsPhase() {
+  if (absState.isBreak) {
+    absState.secondsLeft  = ABS_BREAK;
+    absState.totalDuration = ABS_BREAK;
+    document.getElementById('absTimerLabel').textContent  = 'rest';
+    document.querySelector('.abs-current-tag').textContent = 'up next';
+    const nextEx = ABS_EXERCISES[absState.currentIdx];
+    document.getElementById('absCurrentName').textContent = nextEx.name;
+    document.getElementById('absCurrentNote').textContent = nextEx.note;
+    document.getElementById('absRingFill').classList.add('break-mode');
+    renderAbsExList(absState.currentIdx - 1);
+  } else {
+    const ex = ABS_EXERCISES[absState.currentIdx];
+    absState.secondsLeft   = ex.duration;
+    absState.totalDuration = ex.duration;
+    document.getElementById('absCurrentName').textContent = ex.name;
+    document.getElementById('absCurrentNote').textContent = ex.note;
+    document.getElementById('absTimerLabel').textContent  = 'go';
+    document.querySelector('.abs-current-tag').textContent = 'now';
+    document.getElementById('absRingFill').classList.remove('break-mode');
+    renderAbsExList(absState.currentIdx);
+  }
+
+  setAbsTimerDisplay(absState.secondsLeft, absState.isBreak);
+  updateAbsRing(absState.secondsLeft, absState.totalDuration);
+
+  absState.interval = setInterval(() => {
+    absState.secondsLeft--;
+    setAbsTimerDisplay(absState.secondsLeft, absState.isBreak);
+    updateAbsRing(absState.secondsLeft, absState.totalDuration);
+
+    if (absState.secondsLeft <= 0) {
+      clearInterval(absState.interval);
+      absState.interval = null;
+      advanceAbs();
+    }
+  }, 1000);
+}
+
+function advanceAbs() {
+  if (absState.isBreak) {
+    // break just ended — start the exercise
+    absState.isBreak = false;
+    beginAbsPhase();
+  } else {
+    // exercise just ended
+    const justFinished = absState.currentIdx;
+    absState.currentIdx++;
+    if (absState.currentIdx >= ABS_EXERCISES.length) {
+      // all done
+      finishAbsWorkout(justFinished);
+    } else {
+      // start a break before next exercise
+      absState.isBreak = true;
+      beginAbsPhase();
+    }
+  }
+}
+
+function finishAbsWorkout(lastIdx) {
+  absState.running = false;
+  renderAbsExList(lastIdx + 1); // mark all done
+  document.getElementById('absTimerSeconds').textContent = '✓';
+  document.getElementById('absTimerLabel').textContent   = 'done';
+  document.querySelector('.abs-current-tag').textContent = '';
+  document.getElementById('absCurrentName').textContent  = '';
+  document.getElementById('absCurrentNote').textContent  = '';
+  const ring = document.getElementById('absRingFill');
+  ring.style.strokeDashoffset = '0';
+  ring.classList.remove('break-mode');
+  ring.style.stroke = 'var(--strength)';
+  document.getElementById('absDoneScreen').classList.add('visible');
+}
+
+function stopAbsTimer() {
+  if (absState.interval) { clearInterval(absState.interval); absState.interval = null; }
+}
+
+function toggleAbsPause() {
+  if (!absState.running) return; // not started yet
+  const pauseLabel = document.getElementById('absPausedLabel');
+  if (absState.interval) {
+    // currently running — pause it
+    clearInterval(absState.interval);
+    absState.interval = null;
+    if (pauseLabel) pauseLabel.style.display = 'block';
+  } else {
+    // currently paused — resume
+    if (pauseLabel) pauseLabel.style.display = 'none';
+    absState.interval = setInterval(() => {
+      absState.secondsLeft--;
+      setAbsTimerDisplay(absState.secondsLeft, absState.isBreak);
+      updateAbsRing(absState.secondsLeft, absState.totalDuration);
+      if (absState.secondsLeft <= 0) {
+        clearInterval(absState.interval);
+        absState.interval = null;
+        advanceAbs();
+      }
+    }, 1000);
+  }
+}
+
+function setAbsTimerDisplay(secs, isBreak) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  document.getElementById('absTimerSeconds').textContent =
+    secs >= 60 ? `${m}:${s.toString().padStart(2,'0')}` : `${secs}`;
+}
+
+function updateAbsRing(secondsLeft, totalDuration) {
+  const ring = document.getElementById('absRingFill');
+  if (!ring) return;
+  const progress = totalDuration > 0 ? secondsLeft / totalDuration : 0;
+  ring.style.strokeDasharray  = CIRCUMFERENCE;
+  ring.style.strokeDashoffset = CIRCUMFERENCE * (1 - progress);
+}
+
 // ══════════════ INIT ══════════════
 loadHistory();
 loadScriptUrl();
@@ -1762,5 +2379,50 @@ if (getScriptUrl()) {
   renderHistory();
 }
 </script>
+<!-- ══ ABS WORKOUT ══ -->
+<div id="absWorkout" style="display:none">
+  <div class="abs-header">
+    <span class="abs-header-title">abs circuit</span>
+    <button class="btn-abs-exit" onclick="closeAbsWorkout()">← home</button>
+  </div>
+  <div class="abs-body">
+
+    <!-- timer ring -->
+    <div class="abs-timer-ring" id="absTimerRing" onclick="toggleAbsPause()" title="tap to pause / resume">
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <circle class="abs-ring-bg" cx="90" cy="90" r="82"/>
+        <circle class="abs-ring-fill" id="absRingFill" cx="90" cy="90" r="82"
+          stroke-dasharray="515" stroke-dashoffset="0"/>
+      </svg>
+      <div class="abs-timer-text">
+        <div class="abs-timer-seconds" id="absTimerSeconds">1:00</div>
+        <div class="abs-timer-label" id="absTimerLabel">ready</div>
+        <div class="abs-paused-label" id="absPausedLabel" style="display:none">paused</div>
+      </div>
+    </div>
+
+    <!-- current exercise -->
+    <div class="abs-current-ex" id="absCurrentEx">
+      <div class="abs-current-tag">up next</div>
+      <div class="abs-current-name" id="absCurrentName">Basic Crunches</div>
+      <div class="abs-current-note" id="absCurrentNote"></div>
+    </div>
+
+    <!-- start area / done screen -->
+    <div class="abs-start-area" id="absStartArea">
+      <button class="btn-abs-start" onclick="startAbsTimer()">start timer</button>
+    </div>
+    <div class="abs-done-screen" id="absDoneScreen">
+      <div class="abs-done-title">well done.</div>
+      <div class="abs-done-sub">9 minutes. abs complete.</div>
+      <button class="btn-abs-again" onclick="resetAbsWorkout()">↺ go again</button>
+    </div>
+
+    <!-- exercise list -->
+    <div class="abs-ex-list" id="absExList"></div>
+
+  </div>
+</div>
+
 </body>
 </html>
