@@ -314,6 +314,159 @@
   }
   .history-card.open .history-chevron { transform: rotate(180deg); }
 
+  /* collapsible section toggle */
+  .section-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    text-align: left;
+  }
+  .section-toggle-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--dim);
+  }
+  .section-toggle-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .section-chevron {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    transition: transform 0.25s;
+    display: inline-block;
+  }
+  .section-collapsed .section-chevron { transform: rotate(-90deg); }
+  .section-body {
+    overflow: hidden;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+    max-height: 2000px;
+    opacity: 1;
+  }
+  .section-collapsed .section-body {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* ── Exercise Progress Section ── */
+  .progress-section {
+    width: 100%;
+    border-top: 1px solid var(--border);
+    padding-top: 2rem;
+    margin-top: 0rem;
+  }
+  .ex-progress-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .ex-progress-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    text-align: left;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  .ex-progress-btn:hover { border-color: var(--dim); }
+  .ex-progress-btn.active { border-color: var(--accent); }
+  .ex-progress-name {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    flex: 1;
+  }
+  .ex-progress-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .ex-progress-arrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .ex-progress-btn.active .ex-progress-arrow { transform: rotate(90deg); }
+
+  /* drill-down panel */
+  .ex-progress-panel {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    padding: 0.85rem 1rem;
+    margin-top: -1px;
+    margin-bottom: 0.5rem;
+  }
+  .ex-progress-panel.open { display: block; }
+  .progress-session-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0.3rem 0;
+    border-bottom: 1px solid var(--border);
+    gap: 0.5rem;
+  }
+  .progress-session-row:last-child { border-bottom: none; }
+  .progress-session-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    flex-shrink: 0;
+    min-width: 5.5rem;
+  }
+  .progress-session-sets {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--dim);
+    text-align: right;
+    flex: 1;
+    line-height: 1.5;
+  }
+  .progress-session-note {
+    font-style: italic;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+    grid-column: 1 / -1;
+  }
+  .progress-empty {
+    font-style: italic;
+    font-size: 0.82rem;
+    color: var(--muted);
+    padding: 0.3rem 0;
+  }
+  .progress-trend {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    color: var(--strength);
+    margin-bottom: 0.6rem;
+  }
+
   /* ══ WORKOUT ══ */
   #workout { background: var(--bg); }
 
@@ -698,6 +851,44 @@
     display: none;
   }
 
+  .history-loading {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    font-style: normal;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .history-loading-dot {
+    width: 5px; height: 5px; border-radius: 100px;
+    background: var(--muted);
+    animation: pulse 1s infinite;
+  }
+  .history-sync-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+  }
+  .btn-refresh-history {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--border);
+    transition: color 0.2s;
+  }
+  .btn-refresh-history:hover { color: var(--accent); }
+
   /* ══ SUMMARY ══ */
   #summary { background: var(--bg); padding: 3rem 1.5rem; align-items: center; }
   .sum-inner { max-width: 500px; width: 100%; margin: 0 auto; }
@@ -759,7 +950,7 @@
 
     <p class="eyebrow">feb – mar program</p>
     <h1 class="home-title">annie's<br><em>workout</em></h1>
-    <p class="home-sub">full body strength · ski season</p>
+    <p class="home-sub">full body strength · ski season · by anthony zasada</p>
 
     <div class="goal-pills">
       <span class="pill">upper back</span>
@@ -798,11 +989,35 @@
       begin workout
     </button>
 
-    <!-- past workouts -->
-    <div class="history-section">
-      <div class="history-heading">past workouts</div>
-      <div id="historyList">
-        <p class="history-empty">no workouts logged yet.</p>
+    <!-- past workouts (collapsible) -->
+    <div class="history-section" id="historySection">
+      <button class="section-toggle" onclick="toggleSection('historySection')">
+        <span class="section-toggle-label">past workouts</span>
+        <span class="section-toggle-right">
+          <button class="btn-refresh-history" onclick="event.stopPropagation(); fetchHistoryFromSheets()">↻ sync</button>
+          <span class="section-chevron">↓</span>
+        </span>
+      </button>
+      <div class="section-body">
+        <div style="height:1rem"></div>
+        <div id="historyList">
+          <p class="history-empty">no workouts logged yet.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- exercise progress (collapsible) -->
+    <div class="progress-section" id="progressSection">
+      <button class="section-toggle" onclick="toggleSection('progressSection')">
+        <span class="section-toggle-label">exercise progress</span>
+        <span class="section-toggle-right">
+          <span class="section-chevron">↓</span>
+        </span>
+      </button>
+      <div class="section-body">
+        <div class="ex-progress-grid" id="exProgressGrid">
+          <p class="history-empty" style="margin-top:1rem">no workout data yet.</p>
+        </div>
       </div>
     </div>
 
@@ -945,31 +1160,44 @@ let state = {
   currentEx: 0, exercises: [], results: []
 };
 
-// In-memory history (persisted via window.storage if available)
+// In-memory history (persisted to localStorage)
 let workoutHistory = [];
 
 // ══════════════ STORAGE ══════════════
-async function saveHistory() {
-  try {
-    if (window.storage) {
-      await window.storage.set('workout-history', JSON.stringify(workoutHistory));
-    }
-  } catch(e) {}
-  // Always mirror to sessionStorage as fallback within the same session
-  try { sessionStorage.setItem('workout-history', JSON.stringify(workoutHistory)); } catch(e) {}
+function saveHistory() {
+  try { localStorage.setItem('workout-history', JSON.stringify(workoutHistory)); } catch(e) {}
 }
 
-async function loadHistory() {
-  // Try window.storage first
+async function fetchHistoryFromSheets() {
+  const url = getScriptUrl();
+  if (!url) return; // no URL configured, use local only
+
+  const el = document.getElementById('historyList');
+  el.innerHTML = '<div class="history-loading"><div class="history-loading-dot"></div> syncing from sheets…</div>';
+
   try {
-    if (window.storage) {
-      const r = await window.storage.get('workout-history');
-      if (r && r.value) { workoutHistory = JSON.parse(r.value); return; }
+    const res = await fetch(url + '?action=getHistory', { method: 'GET' });
+    const data = await res.json();
+
+    if (data.status === 'ok' && data.workouts && data.workouts.length) {
+      // Merge: sheets is source of truth, keep any local workouts not yet in sheets
+      // Sheets records use date+day as a unique key
+      const sheetsKeys = new Set(data.workouts.map(w => w.date + w.day));
+      const localOnly  = workoutHistory.filter(w => !sheetsKeys.has(w.date + w.day));
+      workoutHistory   = [...data.workouts, ...localOnly]
+        .sort((a, b) => a.date.localeCompare(b.date));
+      saveHistory();
     }
-  } catch(e) {}
-  // Fallback to sessionStorage
+  } catch(e) {
+    // silently fall back to local
+  }
+
+  renderHistory();
+}
+
+function loadHistory() {
   try {
-    const raw = sessionStorage.getItem('workout-history');
+    const raw = localStorage.getItem('workout-history');
     if (raw) { workoutHistory = JSON.parse(raw); return; }
   } catch(e) {}
   workoutHistory = [];
@@ -1010,6 +1238,7 @@ function renderHistory() {
   const el = document.getElementById('historyList');
   if (!workoutHistory.length) {
     el.innerHTML = '<p class="history-empty">no workouts logged yet.</p>';
+    renderExerciseProgress();
     return;
   }
 
@@ -1075,11 +1304,129 @@ function renderHistory() {
       </div>
     </div>`;
   }).join('');
+  setTimeout(afterHistoryRender, 0);
 }
+
+// called after history renders
+function afterHistoryRender() { renderExerciseProgress(); }
 
 function toggleHistoryCard(idx) {
   const card = document.getElementById('hcard-' + idx);
   if (card) card.classList.toggle('open');
+}
+
+function toggleSection(id) {
+  document.getElementById(id).classList.toggle('section-collapsed');
+}
+
+// ── Exercise Progress ──
+function renderExerciseProgress() {
+  const grid = document.getElementById('exProgressGrid');
+  if (!grid) return;
+
+  if (!workoutHistory.length) {
+    grid.innerHTML = '<p class="history-empty" style="margin-top:1rem">no workout data yet.</p>';
+    return;
+  }
+
+  // Collect all unique exercise names across all sessions
+  const allExercises = new Map(); // name → [{ date, sets, note, weightUnit }]
+
+  workoutHistory.forEach(w => {
+    w.exercises.forEach((ex, ei) => {
+      const res = w.results[ei];
+      if (!res || res.status === 'skipped' || res.status === 'busy') return;
+      const logged = res.sets.filter(s => s.weight || s.reps);
+      if (!logged.length) return;
+
+      if (!allExercises.has(ex.name)) allExercises.set(ex.name, []);
+      allExercises.get(ex.name).push({
+        date: w.date,
+        sets: logged,
+        note: res.note || '',
+        weightUnit: ex.weightUnit
+      });
+    });
+  });
+
+  if (!allExercises.size) {
+    grid.innerHTML = '<p class="history-empty" style="margin-top:1rem">log some workouts first.</p>';
+    return;
+  }
+
+  // Sort exercises alphabetically
+  const sorted = [...allExercises.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+
+  grid.innerHTML = '<div style="height:1rem"></div>' + sorted.map(([name, sessions]) => {
+    const sessionCount = sessions.length;
+    // Find best average weight across sessions (ignore bodyweight)
+    const isBodyweight = sessions[0].weightUnit === 'bodyweight' || sessions[0].weightUnit === 'none';
+    const metaStr = sessionCount === 1 ? '1 session' : `${sessionCount} sessions`;
+    const safeId = name.replace(/[^a-z0-9]/gi, '_');
+
+    return `<div>
+      <button class="ex-progress-btn" id="epbtn-${safeId}" onclick="toggleProgressPanel('${safeId}')">
+        <span class="ex-progress-name">${name}</span>
+        <span class="ex-progress-meta">${metaStr}</span>
+        <span class="ex-progress-arrow">›</span>
+      </button>
+      <div class="ex-progress-panel" id="eppanel-${safeId}">
+        ${buildProgressPanel(sessions, isBodyweight)}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function buildProgressPanel(sessions, isBodyweight) {
+  // Sessions already filtered to have logged sets, newest first
+  const sorted = [...sessions].sort((a, b) => b.date.localeCompare(a.date));
+
+  // Trend line: compare first vs last session average weight
+  let trendHTML = '';
+  if (!isBodyweight && sorted.length >= 2) {
+    const avg = sess => {
+      const weights = sess.sets.map(s => parseFloat(s.weight)).filter(n => !isNaN(n));
+      return weights.length ? weights.reduce((a, b) => a + b, 0) / weights.length : 0;
+    };
+    const latest = avg(sorted[0]);
+    const earliest = avg(sorted[sorted.length - 1]);
+    if (latest > earliest) {
+      trendHTML = `<div class="progress-trend">↑ up ${(latest - earliest).toFixed(1)} lbs from first session</div>`;
+    } else if (latest < earliest) {
+      trendHTML = `<div class="progress-trend" style="color:var(--muted)">↓ ${(earliest - latest).toFixed(1)} lbs from first session</div>`;
+    }
+  }
+
+  const rows = sorted.map(sess => {
+    const d = new Date(sess.date + 'T12:00:00');
+    const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const setsStr = sess.sets.map((s, i) => {
+      const w = s.weight ? (isBodyweight ? 'bw' : `${s.weight}lb`) : '—';
+      return `s${i+1}: ${w}×${s.reps || '?'}`;
+    }).join('  ');
+    const noteHTML = sess.note
+      ? `<br><span style="color:var(--muted);font-style:italic;font-size:0.75rem">"${sess.note}"</span>` : '';
+    return `<div class="progress-session-row">
+      <span class="progress-session-date">${dateStr}</span>
+      <span class="progress-session-sets">${setsStr}${noteHTML}</span>
+    </div>`;
+  }).join('');
+
+  return trendHTML + (rows || '<p class="progress-empty">no data</p>');
+}
+
+function toggleProgressPanel(safeId) {
+  const btn   = document.getElementById('epbtn-' + safeId);
+  const panel = document.getElementById('eppanel-' + safeId);
+  if (!btn || !panel) return;
+  const isOpen = panel.classList.contains('open');
+  // Close all others
+  document.querySelectorAll('.ex-progress-panel.open').forEach(p => p.classList.remove('open'));
+  document.querySelectorAll('.ex-progress-btn.active').forEach(b => b.classList.remove('active'));
+  if (!isOpen) {
+    panel.classList.add('open');
+    btn.classList.add('active');
+  }
 }
 
 // ══════════════ SCREEN MANAGER ══════════════
@@ -1265,24 +1612,19 @@ function doGoHome() {
 function saveScriptUrl() {
   const url = document.getElementById('sheetsUrl').value.trim();
   if (!url) return;
-  try { sessionStorage.setItem('sheets-url', url); } catch(e) {}
-  try { if (window.storage) window.storage.set('sheets-url', url); } catch(e) {}
+  try { localStorage.setItem('sheets-url', url); } catch(e) {}
   const msg = document.getElementById('urlSavedMsg');
   msg.style.display = 'block';
   setTimeout(() => { msg.style.display = 'none'; }, 2500);
 }
 
-async function loadScriptUrl() {
-  try {
-    const ss = sessionStorage.getItem('sheets-url');
-    if (ss) { document.getElementById('sheetsUrl').value = ss; return; }
-  } catch(e) {}
-  try {
-    if (window.storage) {
-      const r = await window.storage.get('sheets-url');
-      if (r && r.value) document.getElementById('sheetsUrl').value = r.value;
-    }
-  } catch(e) {}
+function getScriptUrl() {
+  try { return localStorage.getItem('sheets-url') || ''; } catch(e) { return ''; }
+}
+
+function loadScriptUrl() {
+  const url = getScriptUrl();
+  if (url) document.getElementById('sheetsUrl').value = url;
 }
 
 function setSyncBanner(state) {
@@ -1303,7 +1645,7 @@ function setSyncBanner(state) {
 }
 
 async function syncToSheets(record) {
-  const url = document.getElementById('sheetsUrl')?.value?.trim();
+  const url = getScriptUrl();
   if (!url) return;
 
   setSyncBanner('syncing');
@@ -1334,7 +1676,7 @@ async function syncToSheets(record) {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ rows })
+      body: JSON.stringify({ rows, record })
     });
     // no-cors means we can't read the response — assume success if no throw
     setSyncBanner('success');
@@ -1411,11 +1753,14 @@ function goHome() {
 }
 
 // ══════════════ INIT ══════════════
-(async () => {
-  await loadHistory();
+loadHistory();
+loadScriptUrl();
+// Fetch from sheets if URL is configured, otherwise show local
+if (getScriptUrl()) {
+  fetchHistoryFromSheets();
+} else {
   renderHistory();
-  await loadScriptUrl();
-})();
+}
 </script>
 </body>
 </html>
