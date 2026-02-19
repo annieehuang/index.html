@@ -1642,6 +1642,14 @@ function loadHistory() {
 
 // ══════════════ HOME ══════════════
 function selectDay(d) {
+  const wrapEl = document.getElementById('dayPreview');
+  if (state.day === d && wrapEl && wrapEl.classList.contains('visible')) {
+    state.day = null;
+    document.getElementById('dayBtn-' + d).classList.remove('selected');
+    wrapEl.classList.remove('visible');
+    checkStart();
+    return;
+  }
   state.day = d;
   document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('selected'));
   document.getElementById('dayBtn-' + d).classList.add('selected');
