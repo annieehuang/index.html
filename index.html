@@ -303,6 +303,17 @@
     text-align: right;
     flex-shrink: 0;
   }
+  .history-ex-row-wrap { margin-bottom: 0.15rem; }
+  .history-ex-note {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    font-size: 0.8rem;
+    color: var(--muted);
+    opacity: 0.75;
+    padding-left: 0.1rem;
+    margin-top: 0.05rem;
+    margin-bottom: 0.3rem;
+  }
   .history-chevron {
     display: inline-block;
     font-style: normal;
@@ -802,6 +813,29 @@
     transition: border-color 0.2s, color 0.2s;
   }
   .btn-abs-again:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* swap labels */
+  .history-swap-label,
+  .progress-swap-label,
+  .sum-swap-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    opacity: 0.5;
+    margin-right: 0.3rem;
+    white-space: nowrap;
+  }
+  .sum-swap-label {
+    display: block;
+    font-size: 0.58rem;
+    margin-bottom: 0.1rem;
+    opacity: 0.45;
+  }
+  .progress-swap-label {
+    font-size: 0.58rem;
+    display: inline;
+  }
 
   /* delete workout button in history card */
   .btn-delete-workout {
@@ -1649,7 +1683,7 @@ const PROGRAMS = {
         tip: '15 lb default. Hip hinge, let the weight swing back between legs. Drive hips forward explosively.', weightUnit: 'lbs', defaultWeight: 15 },
       { name: 'KB Crossover Step Ups', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / leg',
         tip: '18" box, 17 lb KBs. Cross one foot over to the side of the box, step up leading with the glute.', weightUnit: 'lbs', defaultWeight: 17 },
-      { name: 'Palof Press', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
+      { name: 'Palloff Press', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
         tip: 'Stand side-on to cable. Brace core, press straight out and hold 1 sec. Don\'t rotate hips.', weightUnit: 'lbs' },
       { name: 'Single Arm Farmer Carry', category: 'hypertrophy', sets: 4, repsLabel: '16 steps / arm',
         tip: 'Hold heavy KB in one hand. Tall posture, no leaning. Walk 16 steps, swap hands.', weightUnit: 'lbs' },
@@ -1666,12 +1700,14 @@ const PROGRAMS = {
     exercises: [
       { name: 'Hex / Front Squat', category: 'strength', sets: 5, repsLabel: '4–6 reps',
         tip: 'For hex bar: neutral grip, chest tall. For front squat: elbows high rack position, deep hips.', weightUnit: 'lbs' },
-      { name: 'Dead Bug RDLs', category: 'strength', sets: 5, repsLabel: '4–6 reps',
-        tip: 'Lying dead bug position with light dumbbells. Press lower back flat into floor, extend opposite arm/leg.', weightUnit: 'lbs' },
+      { name: 'Dead Bug', category: 'strength', sets: 4, repsLabel: '8–12 reps / side',
+        tip: 'Lying dead bug position. Press lower back flat into floor, extend opposite arm/leg slowly.', weightUnit: 'bodyweight' },
+      { name: 'RDLs', category: 'strength', sets: 5, repsLabel: '4–6 reps',
+        tip: 'Hinge at hips, back straight, keep head in line with spine.', weightUnit: 'lbs' },
       { name: 'KB Reverse Lunges', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / leg',
         tip: 'KBs at sides or goblet style. Step back, lower knee to hover. Front knee tracks over toes.', weightUnit: 'lbs' },
-      { name: 'Palof Rotations', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
-        tip: 'Like Palof Press but add a controlled rotation. Press out, rotate away from cable, return. Core stays tight.', weightUnit: 'lbs' },
+      { name: 'Palloff Rotations', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
+        tip: 'Like Palloff Press but add a controlled rotation. Press out, rotate away from cable, return. Core stays tight.', weightUnit: 'lbs' },
       { name: 'Roman Chair Back Extensions', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
         tip: 'Hips at pad edge. Lower chest toward floor with control. Squeeze glutes and lower back to rise. No hyperextension.', weightUnit: 'bodyweight' },
       { name: 'Roman Chair Side Bends', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
@@ -1814,32 +1850,43 @@ function renderHistory() {
     // exercise detail rows
     const exRows = w.exercises.map((ex, ei) => {
       const res = w.results[ei];
+      const swapLbl = ex.swappedFrom ? `<span class="history-swap-label">${ex.swappedFrom} →</span>` : '';
+      const exNoteHTML = res.note ? `<div class="history-ex-note">"${res.note}"</div>` : '';
       if (res.status === 'skipped') {
-        return `<div class="history-ex-row">
-          <span class="history-ex-name">${ex.name}</span>
-          <span class="history-ex-skip">— skipped</span>
+        return `<div class="history-ex-row-wrap">
+          <div class="history-ex-row">
+            <span class="history-ex-name">${swapLbl}${ex.name}</span>
+            <span class="history-ex-skip">— skipped</span>
+          </div>${exNoteHTML}
         </div>`;
       }
       if (res.status === 'busy') {
-        return `<div class="history-ex-row">
-          <span class="history-ex-name">${ex.name}</span>
-          <span class="history-ex-skip" style="color:var(--warn)">○ busy</span>
+        return `<div class="history-ex-row-wrap">
+          <div class="history-ex-row">
+            <span class="history-ex-name">${swapLbl}${ex.name}</span>
+            <span class="history-ex-skip" style="color:var(--warn)">○ busy</span>
+          </div>${exNoteHTML}
         </div>`;
       }
       const logged = res.sets.filter(s => s.weight || s.reps);
+      const swapLabel = ex.swappedFrom ? `<span class="history-swap-label">${ex.swappedFrom} →</span>` : '';
       if (!logged.length) {
-        return `<div class="history-ex-row">
-          <span class="history-ex-name">${ex.name}</span>
-          <span class="history-ex-data">—</span>
+        return `<div class="history-ex-row-wrap">
+          <div class="history-ex-row">
+            <span class="history-ex-name">${swapLabel}${ex.name}</span>
+            <span class="history-ex-data">—</span>
+          </div>${exNoteHTML}
         </div>`;
       }
       const dataStr = logged.map((s, si) => {
         const w2 = s.weight ? (ex.weightUnit === 'bodyweight' ? 'bw' : `${s.weight}`) : '—';
         return `s${si+1}: ${w2}×${s.reps || '?'}`;
       }).join('  ');
-      return `<div class="history-ex-row">
-        <span class="history-ex-name">${ex.name}</span>
-        <span class="history-ex-data">${dataStr}</span>
+      return `<div class="history-ex-row-wrap">
+        <div class="history-ex-row">
+          <span class="history-ex-name">${swapLabel}${ex.name}</span>
+          <span class="history-ex-data">${dataStr}</span>
+        </div>${exNoteHTML}
       </div>`;
     }).join('');
 
@@ -1924,7 +1971,8 @@ function renderExerciseProgress() {
         date: w.date,
         sets: logged,
         note: res.note || '',
-        weightUnit: ex.weightUnit
+        weightUnit: ex.weightUnit,
+        swappedFrom: ex.swappedFrom || null
       });
     });
   });
@@ -1984,11 +2032,11 @@ function buildProgressPanel(sessions, isBodyweight) {
       const w = s.weight ? (isBodyweight ? 'bw' : `${s.weight}lb`) : '—';
       return `s${i+1}: ${w}×${s.reps || '?'}`;
     }).join('  ');
-    const noteHTML = sess.note
-      ? `<br><span style="color:var(--muted);font-style:italic;font-size:0.75rem">"${sess.note}"</span>` : '';
+    const swapHTML = sess.swappedFrom
+      ? `<br><span class="progress-swap-label">${sess.swappedFrom} →</span>` : '';
     return `<div class="progress-session-row">
       <span class="progress-session-date">${dateStr}</span>
-      <span class="progress-session-sets">${setsStr}${noteHTML}</span>
+      <span class="progress-session-sets">${setsStr}${swapHTML}</span>
     </div>`;
   }).join('');
 
@@ -2196,12 +2244,9 @@ function swapExercise(newName) {
   if (!newEx) return;
 
   const i = state.currentEx;
-  // Preserve sets count from original exercise, update definition
-  const oldSets = state.exercises[i].sets;
-  state.exercises[i] = { ...newEx };
-  // Reset sets data for this exercise to match new set count
-  const newSetsCount = newEx.sets;
-  state.results[i].sets = Array.from({length: newSetsCount}, () => ({weight: newEx.defaultWeight || '', reps: ''}));
+  const originalName = state.exercises[i].swappedFrom || state.exercises[i].name;
+  state.exercises[i] = { ...newEx, swappedFrom: originalName };
+  state.results[i].sets = Array.from({length: newEx.sets}, () => ({weight: newEx.defaultWeight || '', reps: ''}));
   state.results[i].status = 'pending';
   state.results[i].note   = '';
 
@@ -2445,7 +2490,7 @@ function showSummary() {
     dayLabel: PROGRAMS[state.day].label,
     day: state.day,
     sessionNotes: state.sessionNotes,
-    exercises: state.exercises.map(e => ({ name: e.name, weightUnit: e.weightUnit })),
+    exercises: state.exercises.map(e => ({ name: e.name, weightUnit: e.weightUnit, swappedFrom: e.swappedFrom || null })),
     results: state.results.map(r => ({
       status: r.status,
       sets: r.sets.map(s => ({ weight: s.weight, reps: s.reps })),
@@ -2485,7 +2530,8 @@ function showSummary() {
       detail = `<div class="sum-ex-sets">${txt || 'no sets logged'}</div>`;
     }
     const note = res.note ? `<div class="sum-ex-note">"${res.note}"</div>` : '';
-    html += `<div class="sum-ex"><div class="sum-ex-name">${ex.name}</div>${detail}${note}</div>`;
+    const swapTag = ex.swappedFrom ? `<span class="sum-swap-label">${ex.swappedFrom} →</span>` : '';
+    html += `<div class="sum-ex"><div class="sum-ex-name">${swapTag}${ex.name}</div>${detail}${note}</div>`;
   });
 
   document.getElementById('statSets').textContent    = totalSets;
