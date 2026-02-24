@@ -803,6 +803,118 @@
   }
   .btn-abs-again:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* delete workout button in history card */
+  .btn-delete-workout {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0.4rem 0;
+    margin-top: 0.7rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--border);
+    transition: color 0.2s;
+    display: block;
+  }
+  .btn-delete-workout:hover { color: var(--danger); text-decoration-color: var(--danger); }
+
+  /* exercise swap dropdown */
+  .ex-swap-wrap {
+    position: relative;
+    margin-bottom: 0.6rem;
+  }
+  .ex-name-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+  }
+  .btn-swap-ex {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.56rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: var(--border);
+    transition: color 0.2s;
+    white-space: nowrap;
+  }
+  .btn-swap-ex:hover { color: var(--accent); text-decoration-color: var(--accent); }
+  .swap-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 200;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    min-width: 220px;
+    max-height: 260px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    margin-top: 0.3rem;
+  }
+  .swap-dropdown.open { display: block; }
+  .swap-option {
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    padding: 0.55rem 0.85rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+  }
+  .swap-option:last-child { border-bottom: none; }
+  .swap-option:hover { background: rgba(200,169,122,0.08); }
+  .swap-option.current { color: var(--muted); pointer-events: none; font-style: italic; }
+
+  /* reorder exercises */
+  .reorder-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.55rem 0.9rem;
+    margin-bottom: 1.1rem;
+  }
+  .reorder-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .reorder-btns { display: flex; gap: 0.4rem; }
+  .btn-reorder {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--muted);
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-reorder:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn-reorder:disabled { opacity: 0.25; cursor: not-allowed; }
+
   /* ══ WORKOUT ══ */
   #workout { background: var(--bg); }
 
@@ -1764,6 +1876,7 @@ function renderHistory() {
       ${noteHTML}
       <div class="history-detail">
         ${exRows}
+        <button class="btn-delete-workout" onclick="event.stopPropagation(); deleteWorkout(${actualIdx})">delete this entry</button>
       </div>
     </div>`;
   }).join('');
@@ -1776,6 +1889,31 @@ function afterHistoryRender() { renderExerciseProgress(); }
 function toggleHistoryCard(idx) {
   const card = document.getElementById('hcard-' + idx);
   if (card) card.classList.toggle('open');
+}
+
+function deleteWorkout(idx) {
+  if (!window.confirm) {
+    // inline confirm fallback — insert a tiny confirm bar into the card
+    const card = document.getElementById('hcard-' + idx);
+    if (!card) return;
+    const existing = card.querySelector('.delete-confirm');
+    if (existing) { existing.remove(); return; }
+    const bar = document.createElement('div');
+    bar.className = 'delete-confirm';
+    bar.style.cssText = 'margin-top:0.6rem;display:flex;gap:0.5rem;align-items:center;';
+    bar.innerHTML = `<span style="font-family:'EB Garamond',serif;font-style:italic;font-size:0.85rem;color:var(--muted);flex:1">delete this entry?</span>
+      <button onclick="event.stopPropagation();confirmDeleteWorkout(${idx})" style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;background:none;border:1px solid var(--danger);border-radius:2px;color:var(--danger);padding:0.28rem 0.6rem;cursor:pointer;">yes</button>
+      <button onclick="event.stopPropagation();this.parentElement.remove()" style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;background:none;border:1px solid var(--border);border-radius:2px;color:var(--muted);padding:0.28rem 0.6rem;cursor:pointer;">cancel</button>`;
+    card.appendChild(bar);
+    return;
+  }
+  confirmDeleteWorkout(idx);
+}
+
+function confirmDeleteWorkout(idx) {
+  workoutHistory.splice(idx, 1);
+  saveHistory();
+  renderHistory();
 }
 
 function toggleSection(id) {
@@ -1959,10 +2097,25 @@ function renderExercise() {
   document.getElementById('exerciseArea').innerHTML = `
     <div class="ex-wrap">
       <span class="cat-tag ${ex.category}">${catLabel[ex.category]}</span>
-      <h2 class="ex-name">${ex.name}</h2>
+      <div class="ex-swap-wrap">
+        <div class="ex-name-row">
+          <h2 class="ex-name" style="margin-bottom:0">${ex.name}</h2>
+          <button class="btn-swap-ex" onclick="toggleSwapDropdown(event)">swap ↓</button>
+        </div>
+        <div class="swap-dropdown" id="swapDropdown">
+          ${buildSwapOptions(ex.name)}
+        </div>
+      </div>
       <p class="ex-rx">
         <strong>${ex.sets} sets</strong> &nbsp;·&nbsp; ${ex.repsLabel}
       </p>
+      <div class="reorder-bar">
+        <span class="reorder-lbl">move exercise</span>
+        <div class="reorder-btns">
+          <button class="btn-reorder" onclick="moveExercise(-1)" ${idx === 0 ? 'disabled' : ''}>↑ earlier</button>
+          <button class="btn-reorder" onclick="moveExercise(1)" ${isLast ? 'disabled' : ''}>↓ later</button>
+        </div>
+      </div>
 
       <p class="ex-tip">${ex.tip}</p>
 
@@ -2010,6 +2163,83 @@ function renderExercise() {
         </button>
       </div>
     </div>`;
+}
+
+// ── Exercise Swap ──
+function buildSwapOptions(currentName) {
+  // Collect all exercises from all days as swap candidates
+  const allEx = [];
+  ['A','B','C'].forEach(d => {
+    PROGRAMS[d].exercises.forEach(ex => {
+      if (!allEx.find(e => e.name === ex.name)) allEx.push(ex);
+    });
+  });
+  return allEx.map(ex =>
+    `<div class="swap-option ${ex.name === currentName ? 'current' : ''}"
+      onclick="swapExercise('${ex.name.replace(/'/g,"\\'")}', '${d => d}')"
+      data-name="${ex.name}">${ex.name}${ex.name === currentName ? ' (current)' : ''}</div>`
+  ).join('');
+}
+
+function toggleSwapDropdown(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('swapDropdown');
+  if (!dd) return;
+  dd.classList.toggle('open');
+  // attach click handlers now (avoids template literal escaping issues)
+  dd.querySelectorAll('.swap-option:not(.current)').forEach(opt => {
+    opt.onclick = (ev) => { ev.stopPropagation(); swapExercise(opt.dataset.name); };
+  });
+  // close on outside click
+  if (dd.classList.contains('open')) {
+    setTimeout(() => {
+      document.addEventListener('click', closeSwapDropdown, { once: true });
+    }, 0);
+  }
+}
+
+function closeSwapDropdown() {
+  const dd = document.getElementById('swapDropdown');
+  if (dd) dd.classList.remove('open');
+}
+
+function swapExercise(newName) {
+  // Find the full exercise definition from any program day
+  let newEx = null;
+  ['A','B','C'].forEach(d => {
+    const found = PROGRAMS[d].exercises.find(e => e.name === newName);
+    if (found && !newEx) newEx = found;
+  });
+  if (!newEx) return;
+
+  const i = state.currentEx;
+  // Preserve sets count from original exercise, update definition
+  const oldSets = state.exercises[i].sets;
+  state.exercises[i] = { ...newEx };
+  // Reset sets data for this exercise to match new set count
+  const newSetsCount = newEx.sets;
+  state.results[i].sets = Array.from({length: newSetsCount}, () => ({weight: newEx.defaultWeight || '', reps: ''}));
+  state.results[i].status = 'pending';
+  state.results[i].note   = '';
+
+  closeSwapDropdown();
+  renderExercise();
+}
+
+// ── Reorder Exercises ──
+function moveExercise(dir) {
+  const i    = state.currentEx;
+  const newI = i + dir;
+  if (newI < 0 || newI >= state.exercises.length) return;
+
+  // Swap in both arrays
+  [state.exercises[i], state.exercises[newI]] = [state.exercises[newI], state.exercises[i]];
+  [state.results[i],   state.results[newI]]   = [state.results[newI],   state.results[i]];
+
+  // Stay on the same exercise (which is now at newI)
+  state.currentEx = newI;
+  renderExercise();
+  window.scrollTo(0, 0);
 }
 
 // ── Apply to all: take set 0's weight & reps, propagate to all sets ──
