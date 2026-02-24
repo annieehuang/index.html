@@ -880,40 +880,7 @@
   .swap-option:hover { background: rgba(200,169,122,0.08); }
   .swap-option.current { color: var(--muted); pointer-events: none; font-style: italic; }
 
-  /* reorder exercises */
-  .reorder-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 0.55rem 0.9rem;
-    margin-bottom: 1.1rem;
-  }
-  .reorder-lbl {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .reorder-btns { display: flex; gap: 0.4rem; }
-  .btn-reorder {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: none;
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    color: var(--muted);
-    padding: 0.3rem 0.65rem;
-    cursor: pointer;
-    transition: border-color 0.2s, color 0.2s;
-  }
-  .btn-reorder:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-  .btn-reorder:disabled { opacity: 0.25; cursor: not-allowed; }
+
 
   /* ══ WORKOUT ══ */
   #workout { background: var(--bg); }
@@ -1031,13 +998,25 @@
   .btn-confirm-no:hover { border-color: var(--dim); color: var(--text); }
 
   .dot-row {
-    display: flex; gap: 5px; align-items: center;
+    display: flex; gap: 6px; align-items: center;
     justify-content: center;
-    padding: 0.9rem 1.4rem 0;
+    padding: 0.9rem 1.4rem 0.2rem;
+    flex-wrap: wrap;
   }
-  .dot { width: 5px; height: 5px; border-radius: 100px; background: var(--border); transition: all 0.3s; }
-  .dot.active { background: var(--accent); width: 14px; }
+  .dot {
+    width: 8px; height: 8px; border-radius: 100px;
+    background: var(--border);
+    transition: all 0.25s;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .dot:hover { background: var(--dim); transform: scale(1.3); }
+  .dot.active { background: var(--accent); width: 20px; border-radius: 4px; }
+  .dot.active:hover { transform: none; }
   .dot.done   { background: var(--dim); }
+  .dot.done-data { background: var(--strength); }
 
   .ex-wrap {
     padding: 1.6rem 1.4rem 2.5rem;
@@ -1648,9 +1627,9 @@ const PROGRAMS = {
       { name: 'Goblet Reverse Lunges', category: 'strength', sets: 4, repsLabel: '8 reps / leg',
         tip: 'Hold dumbbell at chest. Step back and lower your back knee to an inch off the floor. Keep torso upright.', weightUnit: 'lbs' },
       { name: 'Seated Cable Row', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
-        tip: 'Sit tall. Pull handle to your belly button, keep elbows close, pinch shoulder blades. Pause 1 sec at the pull, slow release.', weightUnit: 'lbs' },
+        tip: 'Sit tall. Pull handle to your lower sternum, keep elbows close. Pause 1 sec at the pull, slow release.', weightUnit: 'lbs' },
       { name: 'Bosu Crunches', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
-        tip: 'Center your lower back on the dome. Hands behind neck, curl shoulders down — don\'t pull your neck.', weightUnit: 'bodyweight' },
+        tip: 'Centre your lower back on the dome. Hands at temples, curl shoulders off — don\'t pull your neck.', weightUnit: 'bodyweight' },
       { name: 'Quad Extension', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
         tip: 'Seat so knee aligns with machine pivot. Squeeze quads at the top, lower slowly — 3 count down.', weightUnit: 'lbs' },
       { name: 'Bosu Mountain Climbers', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
@@ -1665,15 +1644,15 @@ const PROGRAMS = {
       { name: 'Pull Ups', category: 'strength', sets: 5, repsLabel: 'Max volume',
         tip: 'Dead hang start, full extension. Drive elbows down, chin clears bar. Quality reps over speed.', weightUnit: 'bodyweight' },
       { name: 'Hip Thrusts', category: 'strength', sets: 4, repsLabel: '6–8 reps',
-        tip: 'Upper back on bench, bar across hips. Drive through heels, squeeze glutes hard at top. Full range of motion.', weightUnit: 'lbs' },
+        tip: 'Upper back on bench, bar across hips. Drive through heels, squeeze glutes hard at top. Full ROM.', weightUnit: 'lbs' },
       { name: 'DB Pull Through', category: 'strength', sets: 4, repsLabel: '8 reps',
-        tip: '15 lb default. Plank position, keep hips square. Pull the dumbbell from one side to the other.', weightUnit: 'lbs', defaultWeight: 15 },
+        tip: '15 lb default. Hip hinge, let the weight swing back between legs. Drive hips forward explosively.', weightUnit: 'lbs', defaultWeight: 15 },
       { name: 'KB Crossover Step Ups', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / leg',
-        tip: '24" box, 17 lb KBs. Cross one foot over to the side of the box, step up, across, and down leading with the glute.', weightUnit: 'lbs', defaultWeight: 17 },
-      { name: 'Pallof Press', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
+        tip: '18" box, 17 lb KBs. Cross one foot over to the side of the box, step up leading with the glute.', weightUnit: 'lbs', defaultWeight: 17 },
+      { name: 'Palof Press', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
         tip: 'Stand side-on to cable. Brace core, press straight out and hold 1 sec. Don\'t rotate hips.', weightUnit: 'lbs' },
       { name: 'Single Arm Farmer Carry', category: 'hypertrophy', sets: 4, repsLabel: '16 steps / arm',
-        tip: 'Hold heavy KB in one hand. Tall posture, hand on rib, no leaning. Walk 16 steps, swap hands.', weightUnit: 'lbs' },
+        tip: 'Hold heavy KB in one hand. Tall posture, no leaning. Walk 16 steps, swap hands.', weightUnit: 'lbs' },
       { name: 'Push Ups', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
         tip: 'Hands shoulder-width, body plank. Full range — chest near floor. Elbows at 45° (not flared).', weightUnit: 'bodyweight' },
       { name: 'Rear Shoulder Flys', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
@@ -1687,13 +1666,11 @@ const PROGRAMS = {
     exercises: [
       { name: 'Hex / Front Squat', category: 'strength', sets: 5, repsLabel: '4–6 reps',
         tip: 'For hex bar: neutral grip, chest tall. For front squat: elbows high rack position, deep hips.', weightUnit: 'lbs' },
-      { name: 'Dead Bug', category: 'strength', sets: 4, repsLabel: '8–12 reps / side',
-        tip: 'Lying dead bug position. Press lower back flat into floor, extend opposite arm/leg.', weightUnit: 'bodyweight' },
-      { name: 'RDLs', category: 'strength', sets: 5, repsLabel: '4–6 reps',
-        tip: 'Hinge at hips, back straight, keep head in line with spine', weightUnit: 'lbs' },
+      { name: 'Dead Bug RDLs', category: 'strength', sets: 5, repsLabel: '4–6 reps',
+        tip: 'Lying dead bug position with light dumbbells. Press lower back flat into floor, extend opposite arm/leg.', weightUnit: 'lbs' },
       { name: 'KB Reverse Lunges', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / leg',
         tip: 'KBs at sides or goblet style. Step back, lower knee to hover. Front knee tracks over toes.', weightUnit: 'lbs' },
-      { name: 'Pallof Rotations', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
+      { name: 'Palof Rotations', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps / side',
         tip: 'Like Palof Press but add a controlled rotation. Press out, rotate away from cable, return. Core stays tight.', weightUnit: 'lbs' },
       { name: 'Roman Chair Back Extensions', category: 'hypertrophy', sets: 4, repsLabel: '8–12 reps',
         tip: 'Hips at pad edge. Lower chest toward floor with control. Squeeze glutes and lower back to rise. No hyperextension.', weightUnit: 'bodyweight' },
@@ -2048,14 +2025,23 @@ function renderExercise() {
   const isLast = idx === total - 1;
 
   document.getElementById('progressDay').textContent  = PROGRAMS[state.day].label.toLowerCase();
-  document.getElementById('progressStep').textContent = `${idx + 1} of ${total}`;
-  document.getElementById('progressFill').style.width = `${(idx / total) * 100}%`;
 
-  document.getElementById('dotNav').innerHTML = state.exercises.map((_, i) => {
+  const completedCount = state.results.filter((r, i) =>
+    r.status === 'skipped' || r.status === 'busy' ||
+    r.sets.some(s => s.weight || s.reps)
+  ).length;
+  document.getElementById('progressStep').textContent = `${completedCount} / ${total} done`;
+  document.getElementById('progressFill').style.width = `${(completedCount / total) * 100}%`;
+
+  document.getElementById('dotNav').innerHTML = state.exercises.map((ex, i) => {
+    const r = state.results[i];
+    const hasData = r.sets.some(s => s.weight || s.reps);
+    const isComplete = r.status === 'skipped' || r.status === 'busy' || hasData;
     let c = 'dot';
-    if (i === idx) c += ' active';
-    else if (state.results[i].status !== 'pending') c += ' done';
-    return `<div class="${c}"></div>`;
+    if (i === idx)      c += ' active';
+    else if (isComplete) c += ' done-data';
+    else if (r.status !== 'pending') c += ' done';
+    return `<button class="${c}" onclick="jumpToExercise(${i})" title="${ex.name}"></button>`;
   }).join('');
 
   const catLabel = { strength: 'strength focus', hypertrophy: 'hypertrophy', energy: 'energy system' };
@@ -2111,13 +2097,7 @@ function renderExercise() {
       <p class="ex-rx">
         <strong>${ex.sets} sets</strong> &nbsp;·&nbsp; ${ex.repsLabel}
       </p>
-      <div class="reorder-bar">
-        <span class="reorder-lbl">move exercise</span>
-        <div class="reorder-btns">
-          <button class="btn-reorder" onclick="moveExercise(-1)" ${idx === 0 ? 'disabled' : ''}>↑ earlier</button>
-          <button class="btn-reorder" onclick="moveExercise(1)" ${isLast ? 'disabled' : ''}>↓ later</button>
-        </div>
-      </div>
+
 
       <p class="ex-tip">${ex.tip}</p>
 
@@ -2169,17 +2149,18 @@ function renderExercise() {
 
 // ── Exercise Swap ──
 function buildSwapOptions(currentName) {
-  // Collect all exercises from all days as swap candidates
+  // Collect all unique exercises from ALL days, sorted alphabetically
+  const seen = new Set();
   const allEx = [];
   ['A','B','C'].forEach(d => {
     PROGRAMS[d].exercises.forEach(ex => {
-      if (!allEx.find(e => e.name === ex.name)) allEx.push(ex);
+      if (!seen.has(ex.name)) { seen.add(ex.name); allEx.push(ex); }
     });
   });
+  allEx.sort((a, b) => a.name.localeCompare(b.name));
   return allEx.map(ex =>
     `<div class="swap-option ${ex.name === currentName ? 'current' : ''}"
-      onclick="swapExercise('${ex.name.replace(/'/g,"\\'")}', '${d => d}')"
-      data-name="${ex.name}">${ex.name}${ex.name === currentName ? ' (current)' : ''}</div>`
+      data-name="${ex.name}">${ex.name}${ex.name === currentName ? ' · current' : ''}</div>`
   ).join('');
 }
 
@@ -2228,18 +2209,11 @@ function swapExercise(newName) {
   renderExercise();
 }
 
-// ── Reorder Exercises ──
-function moveExercise(dir) {
-  const i    = state.currentEx;
-  const newI = i + dir;
-  if (newI < 0 || newI >= state.exercises.length) return;
-
-  // Swap in both arrays
-  [state.exercises[i], state.exercises[newI]] = [state.exercises[newI], state.exercises[i]];
-  [state.results[i],   state.results[newI]]   = [state.results[newI],   state.results[i]];
-
-  // Stay on the same exercise (which is now at newI)
-  state.currentEx = newI;
+// ── Dot navigation ──
+function jumpToExercise(i) {
+  if (i < 0 || i >= state.exercises.length) return;
+  stopRest();
+  state.currentEx = i;
   renderExercise();
   window.scrollTo(0, 0);
 }
