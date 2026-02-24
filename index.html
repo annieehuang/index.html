@@ -41,8 +41,8 @@
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
   }
 
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: flex; flex-direction: column; }
+  .screen { display: none; }
+  .screen.active { display: flex; flex-direction: column; position: fixed; inset: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; z-index: 10; }
 
   /* ══ HOME ══ */
   #home {
@@ -575,12 +575,15 @@
   /* ── Abs Screen ── */
   #absWorkout {
     background: var(--bg);
-    min-height: 100vh;
+    position: fixed;
+    inset: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    z-index: 500;
   }
   .abs-header {
-    position: sticky; top: 0; z-index: 100;
+    flex-shrink: 0;
     background: rgba(28,26,23,0.96);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
@@ -613,6 +616,8 @@
 
   .abs-body {
     flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -815,26 +820,31 @@
   .btn-abs-again:hover { border-color: var(--accent); color: var(--accent); }
 
   /* swap labels */
-  .history-swap-label,
-  .progress-swap-label,
-  .sum-swap-label {
+  .history-swap-label {
+    display: block;
     font-family: 'DM Mono', monospace;
     font-size: 0.56rem;
     letter-spacing: 0.06em;
     color: var(--muted);
     opacity: 0.5;
-    margin-right: 0.3rem;
-    white-space: nowrap;
+    margin-bottom: 0.15rem;
+  }
+  .progress-swap-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    opacity: 0.5;
+    display: inline;
   }
   .sum-swap-label {
     display: block;
+    font-family: 'DM Mono', monospace;
     font-size: 0.58rem;
-    margin-bottom: 0.1rem;
+    letter-spacing: 0.06em;
+    color: var(--muted);
     opacity: 0.45;
-  }
-  .progress-swap-label {
-    font-size: 0.58rem;
-    display: inline;
+    margin-bottom: 0.1rem;
   }
 
   /* delete workout button in history card */
@@ -917,10 +927,15 @@
 
 
   /* ══ WORKOUT ══ */
-  #workout { background: var(--bg); }
+  #workout { background: var(--bg); overflow: hidden; }
+  .workout-scroll {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 
   .prog-bar {
-    position: sticky; top: 0; z-index: 100;
+    flex-shrink: 0;
     background: rgba(28,26,23,0.96);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--border);
@@ -982,8 +997,7 @@
   /* inline confirm bar */
   .confirm-bar {
     display: none;
-    position: sticky;
-    top: 0;
+    flex-shrink: 0;
     z-index: 101;
     background: var(--surface2);
     border-bottom: 1px solid var(--border);
@@ -1613,23 +1627,25 @@
     </div>
     <button class="btn-end" onclick="confirmEnd()">finish</button>
   </div>
-  <!-- inline confirm bars -->
-  <div class="confirm-bar" id="confirmHomeBar">
-    <span class="confirm-msg">clear this session and go home?</span>
-    <div class="confirm-btns">
-      <button class="btn-confirm-yes" onclick="doGoHome()">yes, clear</button>
-      <button class="btn-confirm-no" onclick="hideConfirm('confirmHomeBar')">cancel</button>
+  <div class="workout-scroll">
+    <!-- inline confirm bars -->
+    <div class="confirm-bar" id="confirmHomeBar">
+      <span class="confirm-msg">clear this session and go home?</span>
+      <div class="confirm-btns">
+        <button class="btn-confirm-yes" onclick="doGoHome()">yes, clear</button>
+        <button class="btn-confirm-no" onclick="hideConfirm('confirmHomeBar')">cancel</button>
+      </div>
     </div>
-  </div>
-  <div class="confirm-bar" id="confirmFinishBar">
-    <span class="confirm-msg">finish and save this workout?</span>
-    <div class="confirm-btns">
-      <button class="btn-confirm-yes" onclick="showSummary()">save</button>
-      <button class="btn-confirm-no" onclick="hideConfirm('confirmFinishBar')">cancel</button>
+    <div class="confirm-bar" id="confirmFinishBar">
+      <span class="confirm-msg">finish and save this workout?</span>
+      <div class="confirm-btns">
+        <button class="btn-confirm-yes" onclick="showSummary()">save</button>
+        <button class="btn-confirm-no" onclick="hideConfirm('confirmFinishBar')">cancel</button>
+      </div>
     </div>
+    <div class="dot-row" id="dotNav"></div>
+    <div id="exerciseArea"></div>
   </div>
-  <div class="dot-row" id="dotNav"></div>
-  <div id="exerciseArea"></div>
 </div>
 
 <!-- ══ SUMMARY ══ -->
@@ -1816,7 +1832,7 @@ function startWorkout() {
   state.currentEx = 0;
   state.results = state.exercises.map(ex => ({
     status: 'pending',
-    sets: Array.from({length: ex.sets}, () => ({weight: ex.defaultWeight || '', reps: ''})),
+    sets: Array.from({length: ex.sets}, () => ({weight: '', reps: ''})),
     note: ''
   }));
   showScreen('workout');
@@ -1854,16 +1870,18 @@ function renderHistory() {
       const exNoteHTML = res.note ? `<div class="history-ex-note">"${res.note}"</div>` : '';
       if (res.status === 'skipped') {
         return `<div class="history-ex-row-wrap">
+          ${swapLbl}
           <div class="history-ex-row">
-            <span class="history-ex-name">${swapLbl}${ex.name}</span>
+            <span class="history-ex-name">${ex.name}</span>
             <span class="history-ex-skip">— skipped</span>
           </div>${exNoteHTML}
         </div>`;
       }
       if (res.status === 'busy') {
         return `<div class="history-ex-row-wrap">
+          ${swapLbl}
           <div class="history-ex-row">
-            <span class="history-ex-name">${swapLbl}${ex.name}</span>
+            <span class="history-ex-name">${ex.name}</span>
             <span class="history-ex-skip" style="color:var(--warn)">○ busy</span>
           </div>${exNoteHTML}
         </div>`;
@@ -1872,8 +1890,9 @@ function renderHistory() {
       const swapLabel = ex.swappedFrom ? `<span class="history-swap-label">${ex.swappedFrom} →</span>` : '';
       if (!logged.length) {
         return `<div class="history-ex-row-wrap">
+          ${swapLabel}
           <div class="history-ex-row">
-            <span class="history-ex-name">${swapLabel}${ex.name}</span>
+            <span class="history-ex-name">${ex.name}</span>
             <span class="history-ex-data">—</span>
           </div>${exNoteHTML}
         </div>`;
@@ -1883,8 +1902,9 @@ function renderHistory() {
         return `s${si+1}: ${w2}×${s.reps || '?'}`;
       }).join('  ');
       return `<div class="history-ex-row-wrap">
+        ${swapLabel}
         <div class="history-ex-row">
-          <span class="history-ex-name">${swapLabel}${ex.name}</span>
+          <span class="history-ex-name">${ex.name}</span>
           <span class="history-ex-data">${dataStr}</span>
         </div>${exNoteHTML}
       </div>`;
@@ -2097,7 +2117,7 @@ function renderExercise() {
 
   let setsHTML = '';
   if (ex.weightUnit !== 'none') {
-    const ph = ex.weightUnit === 'bodyweight' ? 'bw' : 'lbs';
+    const ph = ex.weightUnit === 'bodyweight' ? 'bw' : (ex.defaultWeight ? `${ex.defaultWeight} lbs` : 'lbs');
     setsHTML = `
       <div class="sets-header">
         <span class="sets-lbl">log sets</span>
@@ -2246,7 +2266,7 @@ function swapExercise(newName) {
   const i = state.currentEx;
   const originalName = state.exercises[i].swappedFrom || state.exercises[i].name;
   state.exercises[i] = { ...newEx, swappedFrom: originalName };
-  state.results[i].sets = Array.from({length: newEx.sets}, () => ({weight: newEx.defaultWeight || '', reps: ''}));
+  state.results[i].sets = Array.from({length: newEx.sets}, () => ({weight: '', reps: ''}));
   state.results[i].status = 'pending';
   state.results[i].note   = '';
 
@@ -2260,7 +2280,7 @@ function jumpToExercise(i) {
   stopRest();
   state.currentEx = i;
   renderExercise();
-  window.scrollTo(0, 0);
+  const wsd = document.querySelector('.workout-scroll'); if (wsd) wsd.scrollTop = 0; else window.scrollTo(0,0);
 }
 
 // ── Apply to all: take set 0's weight & reps, propagate to all sets ──
@@ -2484,6 +2504,13 @@ async function syncToSheets(record) {
 
 // ══════════════ SUMMARY ══════════════
 function showSummary() {
+  // Auto-skip any exercises with no sets logged and no explicit status
+  state.results.forEach(r => {
+    if (r.status === 'pending' && !r.sets.some(s => s.weight || s.reps)) {
+      r.status = 'skipped';
+    }
+  });
+
   // Save workout to local history
   const record = {
     date: state.date,
